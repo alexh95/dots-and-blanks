@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://cr128jugxrqid"]
+
+[ext_resource type="Texture2D" uid="uid://dinx6f06hshir" path="res://Assets/domino-sample.png" id="1_2ngp2"]
+
+[node name="Domino" type="Node2D"]
+
+[node name="Sprite" type="Sprite2D" parent="."]
+scale = Vector2(4, 4)
+texture = ExtResource("1_2ngp2")

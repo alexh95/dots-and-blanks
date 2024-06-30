@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://cyc8bsg0d3f55"]
+
+[ext_resource type="Script" path="res://Scenes/main.gd" id="1_s7t71"]
+[ext_resource type="PackedScene" uid="uid://cr128jugxrqid" path="res://Scenes/domino-sample.tscn" id="2_fpl72"]
+
+[node name="Main" type="Node"]
+script = ExtResource("1_s7t71")
+
+[node name="Label" type="Label" parent="."]
+offset_right = 125.0
+offset_bottom = 23.0
+text = "dots-and-blanks"
+
+[node name="DominoGhost" parent="." instance=ExtResource("2_fpl72")]
+modulate = Color(1, 1, 1, 0.501961)
+position = Vector2(458, 217)
