@@ -11,10 +11,10 @@ config_version=5
 [application]
 
 config/name="dots-and-blanks"
-config/version="v0.0.1"
+config/version="v0.0.2"
 run/main_scene="res://Scenes/main.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
-config/icon="res://icon.svg"
+config/icon="res://icon.png"
 
 [rendering]
 
