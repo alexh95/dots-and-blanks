@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://behjqdqdmwlf8"]
+
+[ext_resource type="Script" path="res://domino_grid.gd" id="1_wkso0"]
+
+[node name="domino_grid" type="Node2D"]
+script = ExtResource("1_wkso0")
