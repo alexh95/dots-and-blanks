@@ -32,8 +32,8 @@ func _input(event):
 		if (event.button_index == 2 and event.button_mask > 0):
 			dominoVertical = !dominoVertical
 			$DominoGhost.rotation += 0.5 * PI
-	$DominoGhost.position = $DominoGrid.getClosestCell(event.position.x, event.position.y, dominoVertical)
-			
+		$DominoGhost.position = $DominoGrid.getClosestCell(event.position.x, event.position.y, dominoVertical)
+
 func closestDomino(position: Vector2):
 	var result = $Dominoes.get_children(true)[0]
 	var dist = position.distance_to(result.position)
