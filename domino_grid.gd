@@ -1,55 +1,51 @@
 extends Node2D
 
 const cellSize = 64
-const rowCount = 10
-const colCount = 9
+const halfCellSize = cellSize / 2
+const verticalCellOffset = Vector2i(halfCellSize, cellSize)
+const horizontalCellOffset = Vector2i(cellSize, halfCellSize)
+
+const rowCount = 6
+const colCount = 5
+#const gridCenter = Vector2i(colCount, rowCount) / 2
+
+const gridSize = cellSize * Vector2i(colCount, rowCount)
+const offset = -gridSize / 2
 
 const rowLinesCount = rowCount + 1
 const colLinesCount = colCount + 1
 
-const halfCellSize = cellSize / 2
 const hardLineColor = Color(0.6, 0.6, 0.6, 1.0)
 const hardLineWidth = 4.0
 const softLineColor = Color(0.6, 0.6, 0.6, 0.2)
 const softLineWidth = 2.0
 
 func _draw():
-	var viewportSize = get_viewport().size
-	var offset = Vector2i(viewportSize.x - colLinesCount * cellSize, viewportSize.y - rowLinesCount * cellSize) / 2
-	var rowFromX = halfCellSize
-	var rowToX =  colLinesCount * cellSize - halfCellSize
-	var colFromY = halfCellSize
-	var colToY = rowLinesCount * cellSize - halfCellSize
+	var rowFromX = 0
+	var rowToX =  colCount * cellSize
+	var colFromY = 0
+	var colToY = rowCount * cellSize
 	
 	for row in range(rowLinesCount):
-		var hardRowY = halfCellSize + cellSize * row
+		var hardRowY = cellSize * row
 		draw_line(offset + Vector2i(rowFromX, hardRowY), offset + Vector2i(rowToX, hardRowY), hardLineColor, hardLineWidth)
 		if (row < rowLinesCount - 1):
-			var softRowY = cellSize + cellSize * row
+			var softRowY = cellSize + cellSize * row - halfCellSize
 			draw_line(offset + Vector2i(rowFromX, softRowY), offset + Vector2i(rowToX, softRowY), softLineColor, softLineWidth)
 	for col in range(colLinesCount):
-		var hardColX = halfCellSize + cellSize * col
+		var hardColX = cellSize * col
 		draw_line(offset + Vector2i(hardColX, colFromY), offset + Vector2i(hardColX, colToY), hardLineColor, hardLineWidth)
 		if (col < colLinesCount - 1):
-			var softColX = cellSize + cellSize * col
+			var softColX = cellSize + cellSize * col - halfCellSize
 			draw_line(offset + Vector2i(softColX, colFromY), offset + Vector2i(softColX, colToY), softLineColor, softLineWidth)
 
-func getClosestCell(x: int, y: int, vertical: bool):
+func getClosestGridPosition(screenPosition: Vector2i):
 	var viewportSize = get_viewport().size
-	var offset = Vector2i(viewportSize.x - colLinesCount * cellSize, viewportSize.y - rowLinesCount * cellSize) / 2
+	var offsetPosition = screenPosition - (viewportSize - gridSize) / 2 
+	var gridPosition = Vector2i(floor(float(offsetPosition.x) / cellSize), floor(float(offsetPosition.y) / cellSize))
+	return gridPosition
 	
-	var gridX
-	var gridY
-	var alignedX
-	var alignedY
-	if (vertical):
-		gridX = (x - offset.x + halfCellSize) / cellSize
-		gridY = (y - offset.y) / cellSize
-		alignedX = offset.x + cellSize * gridX
-		alignedY = offset.y + halfCellSize + cellSize * gridY
-	else:
-		gridX = (x - offset.x) / cellSize
-		gridY = (y - offset.y + halfCellSize) / cellSize
-		alignedX = offset.x + halfCellSize + cellSize * gridX
-		alignedY = offset.y + cellSize * gridY
-	return Vector2i(alignedX, alignedY)
+func getGridScreenPosition(gridPosition: Vector2i):
+	var viewportSize = get_viewport().size
+	var screenPosition = gridPosition * cellSize - gridSize / 2
+	return screenPosition
