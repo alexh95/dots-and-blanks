@@ -7,15 +7,21 @@
 [node name="Main" type="Node"]
 script = ExtResource("1_s7t71")
 
-[node name="DominoGrid" parent="." instance=ExtResource("2_vvgnx")]
+[node name="DominoContainer" type="Node2D" parent="."]
 
-[node name="DominoGhost" parent="." instance=ExtResource("1_76b71")]
+[node name="DominoGrid" parent="DominoContainer" instance=ExtResource("2_vvgnx")]
+
+[node name="DominoGhost" parent="DominoContainer" instance=ExtResource("1_76b71")]
 modulate = Color(1, 1, 1, 0.501961)
 position = Vector2(221, 225)
 
-[node name="Dominoes" type="Node2D" parent="."]
+[node name="Dominoes" type="Node2D" parent="DominoContainer"]
 
-[node name="Label" type="Label" parent="."]
+[node name="Camera2D" type="Camera2D" parent="DominoContainer/Dominoes"]
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Label" type="Label" parent="UI"]
 offset_right = 125.0
 offset_bottom = 23.0
 text = "dots-and-blanks"
