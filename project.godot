@@ -11,9 +11,10 @@ config_version=5
 [application]
 
 config/name="dots-and-blanks"
-config/version="v0.0.3"
+config/version="0.0.4"
 run/main_scene="res://Scenes/main.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
+boot_splash/bg_color=Color(0.114952, 0.143402, 0.17418, 1)
 config/icon="res://icon.png"
 
 [display]
