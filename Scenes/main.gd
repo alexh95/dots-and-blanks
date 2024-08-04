@@ -66,6 +66,7 @@ func _input(event):
 			rotateDomino()
 		if event.keycode == 69 && event.pressed && !event.echo:
 			cycleMode()
+		calculateDominoGhostPosition(hoverGridPosition)
 
 func setMode(newMode: PlacingMode):
 	mode = newMode
@@ -96,8 +97,8 @@ func searchDominoAt(screenPosition: Vector2i):
 	
 func calculateDominoGhostPositionFromScreen(screenPosition):
 	hoverGridPosition = $DominoContainer/DominoGrid.getClosestGridPosition(screenPosition)
-	calculateDominoGhostPosition(hoverGridPosition)	
-	hoveredDomino = searchDominoAt(screenPosition)	
+	calculateDominoGhostPosition(hoverGridPosition)
+	hoveredDomino = searchDominoAt(screenPosition)
 	if mode == PlacingMode.PLACE:
 		$DominoContainer/DominoGhost.visible = true
 		var isInGrid = $DominoContainer/DominoGrid.isInsideGrid(hoverGridPosition, dominoVertical)
