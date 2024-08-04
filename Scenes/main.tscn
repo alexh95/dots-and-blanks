@@ -59,7 +59,7 @@ grow_horizontal = 0
 text = "Fullscreen (F)"
 
 [node name="NextPieceButton" type="Button" parent="UI"]
-anchors_preset = -1
+anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -129.0
