@@ -3,6 +3,9 @@ extends Node2D
 var dotsTop: int = 0
 var dotsBot: int = 0
 
+var gridPosition: Vector2i
+var vertical: bool
+
 func putDots(top: int, bot: int):
 	dotsTop = top
 	dotsBot = bot

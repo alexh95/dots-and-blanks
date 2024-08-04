@@ -49,3 +49,10 @@ func getGridScreenPosition(gridPosition: Vector2i):
 	var viewportSize = get_viewport().size
 	var screenPosition = gridPosition * cellSize - gridSize / 2
 	return screenPosition
+	
+func isInsideGrid(gridPosition: Vector2i, vertical: bool):
+	if vertical:
+		return gridPosition.x >= 0 && gridPosition.x < colCount  && gridPosition.y >= 0 && gridPosition.y < rowCount - 1
+	else:
+		return gridPosition.x >= 0 && gridPosition.x < colCount - 1  && gridPosition.y >= 0 && gridPosition.y < rowCount
+ 
