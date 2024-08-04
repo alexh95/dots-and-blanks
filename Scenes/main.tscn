@@ -22,7 +22,48 @@ position = Vector2(221, 225)
 
 [node name="UI" type="CanvasLayer" parent="."]
 
-[node name="Label" type="Label" parent="UI"]
+[node name="NameAndVersion" type="Label" parent="UI"]
 offset_right = 125.0
 offset_bottom = 23.0
 text = "dots-and-blanks"
+
+[node name="PlacingMode" type="Label" parent="UI"]
+offset_top = 23.0
+offset_right = 104.0
+offset_bottom = 46.0
+text = "Mode: Placing"
+
+[node name="RotateButton" type="Button" parent="UI"]
+offset_left = 6.0
+offset_top = 345.0
+offset_right = 126.0
+offset_bottom = 376.0
+text = "Rotate (R)"
+
+[node name="CycleModeButton" type="Button" parent="UI"]
+offset_left = 6.0
+offset_top = 49.0
+offset_right = 103.0
+offset_bottom = 80.0
+text = "Cycle mode (E)"
+
+[node name="FullscreenButton" type="Button" parent="UI"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -129.0
+offset_top = 46.0
+offset_right = -12.0
+offset_bottom = 77.0
+grow_horizontal = 0
+text = "Fullscreen (F)"
+
+[node name="NextPieceButton" type="Button" parent="UI"]
+anchors_preset = -1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -129.0
+offset_top = 345.0
+offset_right = -12.0
+offset_bottom = 376.0
+text = "Next piece (N)"
