@@ -9,8 +9,8 @@ This is a small puzzle game build around using dominoes pieces. This is my first
 - [x] Grid, snap pieces to a square grid
 - [x] Fullscreen
 - [x] Support for resizing the window
-- [ ] Collisions, detect if a new piece would collide with existing ones and how to handle it
-- [ ] Removing domino pieces
+- [x] Collisions, detect if a new piece would collide with existing ones and how to handle it
+- [x] Removing domino pieces
 - [ ] Resetting the board
 - [ ] Detect if the side of a piece matches the dot values and only allow placement in that case
 
