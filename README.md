@@ -3,7 +3,7 @@
 This is a small puzzle game build around using dominoes pieces. This is my first game in godot and it also serves as an intro to it.
 
 ## Roadmap:
-	
+
 ### Road to 0.1 - core features
 - [x] Domino pieces
 - [x] Grid, snap pieces to a square grid
