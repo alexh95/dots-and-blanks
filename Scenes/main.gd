@@ -29,6 +29,7 @@ func _ready():
 	$UI/CycleModeButton.pressed.connect(self.cycleMode)
 	$UI/NextPieceButton.pressed.connect(self.nextDominoPiece)
 	$UI/FullscreenButton.pressed.connect(self.toggleFullscreen)
+	$UI/ResetBoardButton.pressed.connect(self.resetBoard)
 
 func _input(event):
 	if event is InputEventMouseMotion:
@@ -63,7 +64,10 @@ func _input(event):
 		if event.keycode == 78 && event.pressed && !event.echo:
 			randomizeDots()
 		if event.keycode == 82 && event.pressed && !event.echo:
-			rotateDomino()
+			if event.ctrl_pressed:
+				resetBoard()
+			else:
+				rotateDomino()
 		if event.keycode == 69 && event.pressed && !event.echo:
 			cycleMode()
 		calculateDominoGhostPosition(hoverGridPosition)
@@ -96,24 +100,27 @@ func searchDominoAt(screenPosition: Vector2i):
 	return null
 	
 func calculateDominoGhostPositionFromScreen(screenPosition):
-	hoverGridPosition = $DominoContainer/DominoGrid.getClosestGridPosition(screenPosition)
+	self.hoverGridPosition = $DominoContainer/DominoGrid.getClosestGridPosition(screenPosition)
 	calculateDominoGhostPosition(hoverGridPosition)
 	hoveredDomino = searchDominoAt(screenPosition)
 	if mode == PlacingMode.PLACE:
 		$DominoContainer/DominoGhost.visible = true
-		var isInGrid = $DominoContainer/DominoGrid.isInsideGrid(hoverGridPosition, dominoVertical)
-		var isNotColliding = checkCollisions(hoverGridPosition, dominoVertical)
-		var validGridPosition = isInGrid && isNotColliding
-		if validGridPosition:
-			$DominoContainer/DominoGhost.modulate = Color(0.0, 1.0, 0.0, 0.5)
-		else:
-			$DominoContainer/DominoGhost.modulate = Color(1.0, 0.0, 0.0, 0.5)
-		return validGridPosition
+		return isValidPlacingPosition()
 	elif mode == PlacingMode.REMOVE:
 		if hoveredDomino != null:
 			highlightHoveredDominoForRemoval()
 			return true
 	return false
+	
+func isValidPlacingPosition():
+	var isInGrid = $DominoContainer/DominoGrid.isInsideGrid(self.hoverGridPosition, self.dominoVertical)
+	var isNotColliding = checkCollisions(self.hoverGridPosition, self.dominoVertical)
+	var validGridPosition = isInGrid && isNotColliding
+	if validGridPosition:
+		$DominoContainer/DominoGhost.modulate = Color(0.0, 1.0, 0.0, 0.5)
+	else:
+		$DominoContainer/DominoGhost.modulate = Color(1.0, 0.0, 0.0, 0.5)
+	return validGridPosition
 	
 func calculateDominoGhostPosition(gridPosition):
 	var dominoScreenPosition = $DominoContainer/DominoGrid.getGridScreenPosition(gridPosition)
@@ -146,6 +153,7 @@ func cycleMode():
 		highlightHoveredDominoForRemoval()
 	else:
 		setMode(PlacingMode.PLACE)
+		isValidPlacingPosition()
 
 func rotateDomino():
 	dominoVertical = !dominoVertical
@@ -159,3 +167,7 @@ func toggleFullscreen():
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 	elif DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		
+func resetBoard():
+	for domino in $DominoContainer/Dominoes.get_children(true):
+		$DominoContainer/Dominoes.remove_child(domino);
