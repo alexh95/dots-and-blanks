@@ -3,12 +3,19 @@ extends Node
 const dominoGenerator = preload("res://Scenes/domino.tscn")
 const dottedGenerator = preload("res://Scenes/dotted.tscn")
 
-var dominoVertical = true
+var dominoGridRotation = 0
 var hoverGridPosition = Vector2i(0, 0)
 var hoveredDomino = null
 
 enum PlacingMode {NULL = 0, PLACE, REMOVE}
 var mode: PlacingMode = PlacingMode.PLACE
+
+const directionOffsets = [
+	Vector2i( 0, 1),
+	Vector2i( 1, 0),
+	Vector2i( 0,-1),
+	Vector2i(-1, 0),
+]
 
 func randomizeDots():
 	$DominoContainer/DominoGhost.putDots(randi_range(0, 6), randi_range(0, 6))
@@ -16,14 +23,9 @@ func randomizeDots():
 func _ready():
 	$UI/NameAndVersion.text = 'dots-and-blanks ' + ProjectSettings.get_setting('application/config/version')
 	randomizeDots()
-	var newDominoPiece = dominoGenerator.instantiate()
-	hoverGridPosition = Vector2i(2, 2)
-	calculateDominoGhostPosition(hoverGridPosition)
-	newDominoPiece.vertical = dominoVertical
-	newDominoPiece.gridPosition = hoverGridPosition
-	newDominoPiece.position = $DominoContainer/DominoGhost.position
-	newDominoPiece.putDots($DominoContainer/DominoGhost.dotsTop, $DominoContainer/DominoGhost.dotsBot);
-	$DominoContainer/Dominoes.add_child(newDominoPiece)
+	self.hoverGridPosition = Vector2i(2, 2)
+	calculateDominoGhostPosition(self.hoverGridPosition)
+	createDominoPiece()
 	randomizeDots()
 	$UI/RotateButton.pressed.connect(self.rotateDomino)
 	$UI/CycleModeButton.pressed.connect(self.cycleMode)
@@ -40,18 +42,11 @@ func _input(event):
 		var canPerformAction = calculateDominoGhostPositionFromScreen(event.position)
 		if (event.button_index == 1 and event.button_mask > 0):
 			if canPerformAction:
-				if mode == PlacingMode.PLACE:
-					var newDominoPiece = dominoGenerator.instantiate()
-					newDominoPiece.vertical = dominoVertical
-					newDominoPiece.gridPosition = hoverGridPosition
-					newDominoPiece.position = $DominoContainer/DominoGhost.position
-					newDominoPiece.rotation = $DominoContainer/DominoGhost.rotation
-					newDominoPiece.putDots($DominoContainer/DominoGhost.dotsTop, $DominoContainer/DominoGhost.dotsBot);
-					$DominoContainer/Dominoes.add_child(newDominoPiece)
+				if self.mode == PlacingMode.PLACE:
+					createDominoPiece()
 					randomizeDots()
-				elif mode == PlacingMode.REMOVE:
-					if hoveredDomino != null:
-						$DominoContainer/Dominoes.remove_child(hoveredDomino)
+				elif self.mode == PlacingMode.REMOVE:
+					removeDominoPiece(self.hoveredDomino)
 		if (event.button_index == 2 and event.button_mask > 0):
 			rotateDomino()
 			calculateDominoGhostPositionFromScreen(event.position)
@@ -70,10 +65,10 @@ func _input(event):
 				rotateDomino()
 		if event.keycode == 69 && event.pressed && !event.echo:
 			cycleMode()
-		calculateDominoGhostPosition(hoverGridPosition)
+		calculateDominoGhostPosition(self.hoverGridPosition)
 
 func setMode(newMode: PlacingMode):
-	mode = newMode
+	self.mode = newMode
 	if newMode == PlacingMode.PLACE:
 		$UI/PlacingMode.text = 'Mode: Placing'
 		$DominoContainer/DominoGhost.visible = true
@@ -81,26 +76,15 @@ func setMode(newMode: PlacingMode):
 		$UI/PlacingMode.text = 'Mode: Removing'
 		$DominoContainer/DominoGhost.visible = false
 
-func closestDomino(position: Vector2):
-	var result = $DominoContainer/Dominoes.get_children(true)[0]
-	var dist = position.distance_to(result.position)
-	for domino in $DominoContainer/Dominoes.get_children(true):
-		var dominoDist = position.distance_to(domino.position)
-		if (dist > dominoDist):
-			result = domino
-			dist = dominoDist
-	return result
-	
 func searchDominoAt(screenPosition: Vector2i):
 	var gridPosition = $DominoContainer/DominoGrid.getClosestGridPosition(screenPosition)
 	for domino in $DominoContainer/Dominoes.get_children(true):
-		var dominoSecondGridPosition = Vector2i(domino.gridPosition.x, domino.gridPosition.y + 1) if domino.vertical else Vector2i(domino.gridPosition.x + 1, domino.gridPosition.y)
-		if domino.gridPosition == gridPosition or dominoSecondGridPosition == gridPosition:
+		if domino.gridPosition == gridPosition or domino.getSecondaryGridPosition() == gridPosition:
 			return domino
 	return null
-	
+
 func calculateDominoGhostPositionFromScreen(screenPosition):
-	self.hoverGridPosition = $DominoContainer/DominoGrid.getClosestGridPosition(screenPosition)
+	hoverGridPosition = $DominoContainer/DominoGrid.getClosestGridPosition(screenPosition)
 	calculateDominoGhostPosition(hoverGridPosition)
 	hoveredDomino = searchDominoAt(screenPosition)
 	if mode == PlacingMode.PLACE:
@@ -111,44 +95,76 @@ func calculateDominoGhostPositionFromScreen(screenPosition):
 			highlightHoveredDominoForRemoval()
 			return true
 	return false
-	
+
 func isValidPlacingPosition():
-	var isInGrid = $DominoContainer/DominoGrid.isInsideGrid(self.hoverGridPosition, self.dominoVertical)
-	var isNotColliding = checkCollisions(self.hoverGridPosition, self.dominoVertical)
-	var validGridPosition = isInGrid && isNotColliding
+	var isInGrid = $DominoContainer/DominoGrid.isInBounds(hoverGridPosition) and $DominoContainer/DominoGrid.isInBounds(getSecondaryGridPosition(hoverGridPosition, dominoGridRotation))
+	var isNotColliding = checkCollisions(hoverGridPosition, dominoGridRotation)
+	var matchesDotValues = matchDotValues(hoverGridPosition, dominoGridRotation)
+	var validGridPosition = isInGrid && isNotColliding && matchesDotValues
 	if validGridPosition:
 		$DominoContainer/DominoGhost.modulate = Color(0.0, 1.0, 0.0, 0.5)
 	else:
 		$DominoContainer/DominoGhost.modulate = Color(1.0, 0.0, 0.0, 0.5)
 	return validGridPosition
 	
+func matchDotValues(gridPosition, gridRotation):
+	var primaryValue = $DominoContainer/DominoGhost.getDotValue(self.dominoGridRotation <= 1)
+	var secondaryValue = $DominoContainer/DominoGhost.getDotValue(self.dominoGridRotation > 1)
+	var secondaryGridPosition = getSecondaryGridPosition(gridPosition, gridRotation)
+	
+	var primaryMatch = matchDotLocalValues(gridPosition, primaryValue)
+	var secondaryMatch = matchDotLocalValues(secondaryGridPosition, secondaryValue)
+	return primaryMatch or secondaryMatch;
+
+func matchDotLocalValues(gridPosition: Vector2i, dotValue: int):
+	for offset in directionOffsets:
+		var targetGridPosition = gridPosition + offset
+		if ($DominoContainer/DominoGrid.isInBounds(targetGridPosition)):
+			var targetDotValue = $DominoContainer/DominoGrid.dotValues[targetGridPosition.y][targetGridPosition.x];
+			if dotValue == targetDotValue:
+				return true
+	return false
+
+func getDotValueAtPosition(gridPosition):
+	for domino in $DominoContainer/Dominoes.get_children(true):
+		var dominoSideHit = domino.getDominoSideAtPosition(gridPosition)
+		if dominoSideHit > DominoSide.NULL:
+			return domino.getDotValueAtSide(dominoSideHit)
+	return -1
+
 func calculateDominoGhostPosition(gridPosition):
 	var dominoScreenPosition = $DominoContainer/DominoGrid.getGridScreenPosition(gridPosition)
-	if dominoVertical:
+	if dominoGridRotation % 2 == 0:
 		dominoScreenPosition += $DominoContainer/DominoGrid.verticalCellOffset
 	else:
 		dominoScreenPosition += $DominoContainer/DominoGrid.horizontalCellOffset
 	$DominoContainer/DominoGhost.position = dominoScreenPosition
-	
-func checkCollisions(gridPosition: Vector2i, vertical: bool):
+
+func checkCollisions(gridPosition: Vector2i, gridRotation: int):
 	for domino in $DominoContainer/Dominoes.get_children(true):
-		var dominoSecondGridPosition = Vector2i(domino.gridPosition.x, domino.gridPosition.y + 1) if domino.vertical else Vector2i(domino.gridPosition.x + 1, domino.gridPosition.y)
-		var secondGridPosition = Vector2i(gridPosition.x, gridPosition.y + 1) if vertical else Vector2i(gridPosition.x + 1, gridPosition.y)
-		if (domino.gridPosition == gridPosition) or (domino.gridPosition == secondGridPosition) or (dominoSecondGridPosition == gridPosition) or (dominoSecondGridPosition == secondGridPosition):
+		var gp0 = gridPosition
+		var gp1 = getSecondaryGridPosition(gridPosition, gridRotation)
+		var dgp0 = domino.gridPosition
+		var dgp1 = domino.getSecondaryGridPosition()
+		if gp0 == dgp0 or gp0 == dgp1 or gp1 == dgp0 or gp1 == dgp1:
 			return false
 	return true
-	
+
+func getSecondaryGridPosition(gridPosition, gridRotation):
+	var offset = Vector2i(0, 1) if gridRotation % 2 == 0 else Vector2i(1, 0)
+	return gridPosition + offset
+
 func resetDominoHighlight():
 	for domino in $DominoContainer/Dominoes.get_children(true):
 		domino.modulate = Color(1.0, 1.0, 1.0, 1.0)
 
 func highlightHoveredDominoForRemoval():
-	if hoveredDomino != null:
-		hoveredDomino.modulate = Color(1.0, 0.0, 0.0, 1.0)
-		
+	if self.hoveredDomino != null:
+		self.hoveredDomino.modulate = Color(1.0, 0.0, 0.0, 1.0)
+
 func cycleMode():
 	resetDominoHighlight()
-	if mode == PlacingMode.PLACE:
+	if self.mode == PlacingMode.PLACE:
 		setMode(PlacingMode.REMOVE)
 		highlightHoveredDominoForRemoval()
 	else:
@@ -156,8 +172,8 @@ func cycleMode():
 		isValidPlacingPosition()
 
 func rotateDomino():
-	dominoVertical = !dominoVertical
-	$DominoContainer/DominoGhost.rotation += 0.5 * PI
+	self.dominoGridRotation = (self.dominoGridRotation + 1) % 4
+	$DominoContainer/DominoGhost.rotation = -0.5 * PI * self.dominoGridRotation
 
 func nextDominoPiece():
 	randomizeDots()
@@ -170,4 +186,19 @@ func toggleFullscreen():
 		
 func resetBoard():
 	for domino in $DominoContainer/Dominoes.get_children(true):
-		$DominoContainer/Dominoes.remove_child(domino);
+		removeDominoPiece(domino)
+
+func createDominoPiece():
+	var newDominoPiece = dominoGenerator.instantiate()
+	newDominoPiece.gridPosition = self.hoverGridPosition
+	newDominoPiece.gridRotation = self.dominoGridRotation
+	newDominoPiece.position = $DominoContainer/DominoGhost.position
+	newDominoPiece.rotation = $DominoContainer/DominoGhost.rotation
+	newDominoPiece.putDots($DominoContainer/DominoGhost.dotsTop, $DominoContainer/DominoGhost.dotsBot);
+	$DominoContainer/DominoGrid.updateDotValues(newDominoPiece)
+	$DominoContainer/Dominoes.add_child(newDominoPiece)
+
+func removeDominoPiece(dominoPiece):
+	if dominoPiece != null:
+		$DominoContainer/DominoGrid.removeDotValues(dominoPiece)
+		$DominoContainer/Dominoes.remove_child(dominoPiece)
