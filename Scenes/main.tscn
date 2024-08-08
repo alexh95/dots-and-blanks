@@ -13,7 +13,7 @@ script = ExtResource("1_s7t71")
 
 [node name="DominoGhost" parent="DominoContainer" instance=ExtResource("1_76b71")]
 modulate = Color(1, 1, 1, 0.501961)
-z_index = 1
+z_index = -1
 position = Vector2(221, 225)
 
 [node name="Dominoes" type="Node2D" parent="DominoContainer"]
@@ -34,36 +34,59 @@ offset_bottom = 46.0
 text = "Mode: Placing"
 
 [node name="RotateButton" type="Button" parent="UI"]
-offset_left = 6.0
-offset_top = 345.0
-offset_right = 126.0
-offset_bottom = 376.0
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 16.0
+offset_top = -20.0
+offset_right = 136.0
+offset_bottom = 20.0
+grow_vertical = 2
+focus_mode = 0
 text = "Rotate (R)"
 
 [node name="CycleModeButton" type="Button" parent="UI"]
-offset_left = 6.0
-offset_top = 49.0
-offset_right = 103.0
-offset_bottom = 80.0
+offset_left = 16.0
+offset_top = 48.0
+offset_right = 136.0
+offset_bottom = 88.0
+focus_mode = 0
 text = "Cycle mode (E)"
 
 [node name="FullscreenButton" type="Button" parent="UI"]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -129.0
-offset_top = 46.0
-offset_right = -12.0
-offset_bottom = 77.0
+offset_left = -136.0
+offset_top = 48.0
+offset_right = -16.0
+offset_bottom = 88.0
 grow_horizontal = 0
+focus_mode = 0
 text = "Fullscreen (F)"
 
 [node name="NextPieceButton" type="Button" parent="UI"]
-anchors_preset = 1
+anchors_preset = 6
 anchor_left = 1.0
+anchor_top = 0.5
 anchor_right = 1.0
-offset_left = -129.0
-offset_top = 345.0
-offset_right = -12.0
-offset_bottom = 376.0
+anchor_bottom = 0.5
+offset_left = -136.0
+offset_top = -20.0
+offset_right = -16.0
+offset_bottom = 20.0
+grow_horizontal = 0
+grow_vertical = 2
+focus_mode = 0
 text = "Next piece (N)"
+
+[node name="ResetBoardButton" type="Button" parent="UI"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -80.0
+offset_right = 216.0
+offset_bottom = -40.0
+focus_mode = 0
+text = "Reset board (Ctrl + R)"
