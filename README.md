@@ -14,7 +14,14 @@ This is a small puzzle game build around using dominoes pieces. This is my first
 - [x] Resetting the board
 - [x] Detect if the side of a piece matches the dot values and only allow placement in that case
 
-### Road to 0.2 - design experimentation
-- Try game rules and see where they lead
+0.1 has been achieved, now it's time to move to gameplay systems and the next step is implementing the Room.
 
-### Road to 0.3 - TBD
+### Road to 0.2 - rooms and basic rules
+- [ ] Domino deck
+- [ ] Rooms
+- [ ] Dots on the grid/obstacles
+- [ ] Room entrances and exits
+- [ ] Path between positions made from pieces
+- [ ] Linked Rooms
+
+### Road to 0.3 - design experimentation
