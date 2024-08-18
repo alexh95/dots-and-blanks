@@ -17,7 +17,7 @@ This is a small puzzle game build around using dominoes pieces. This is my first
 0.1 has been achieved, now it's time to move to gameplay systems and the next step is implementing the Room.
 
 ### Road to 0.2 - rooms and basic rules
-- [ ] Domino deck
+- [x] Domino deck
 - [ ] Rooms
 - [ ] Dots on the grid/obstacles
 - [ ] Room entrances and exits
