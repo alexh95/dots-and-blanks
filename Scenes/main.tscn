@@ -1,13 +1,16 @@
-[gd_scene load_steps=4 format=3 uid="uid://cyc8bsg0d3f55"]
+[gd_scene load_steps=5 format=3 uid="uid://cyc8bsg0d3f55"]
 
 [ext_resource type="PackedScene" uid="uid://820icecx2ykr" path="res://Scenes/domino.tscn" id="1_76b71"]
 [ext_resource type="Script" path="res://Scenes/main.gd" id="1_s7t71"]
 [ext_resource type="PackedScene" uid="uid://behjqdqdmwlf8" path="res://Scenes/domino_grid.tscn" id="2_vvgnx"]
+[ext_resource type="PackedScene" uid="uid://b65k2wxxpjffj" path="res://Scenes/domino_deck.tscn" id="4_twr5d"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_s7t71")
 
 [node name="DominoContainer" type="Node2D" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="DominoContainer"]
 
 [node name="DominoGrid" parent="DominoContainer" instance=ExtResource("2_vvgnx")]
 
@@ -18,7 +21,7 @@ position = Vector2(221, 225)
 
 [node name="Dominoes" type="Node2D" parent="DominoContainer"]
 
-[node name="Camera2D" type="Camera2D" parent="DominoContainer"]
+[node name="Deck" parent="DominoContainer" instance=ExtResource("4_twr5d")]
 
 [node name="UI" type="CanvasLayer" parent="."]
 
