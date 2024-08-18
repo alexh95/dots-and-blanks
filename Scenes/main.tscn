@@ -30,12 +30,6 @@ offset_right = 125.0
 offset_bottom = 23.0
 text = "dots-and-blanks"
 
-[node name="PlacingMode" type="Label" parent="UI"]
-offset_top = 23.0
-offset_right = 104.0
-offset_bottom = 46.0
-text = "Mode: Placing"
-
 [node name="RotateButton" type="Button" parent="UI"]
 anchors_preset = 4
 anchor_top = 0.5
@@ -48,14 +42,6 @@ grow_vertical = 2
 focus_mode = 0
 text = "Rotate (R)"
 
-[node name="CycleModeButton" type="Button" parent="UI"]
-offset_left = 16.0
-offset_top = 48.0
-offset_right = 136.0
-offset_bottom = 88.0
-focus_mode = 0
-text = "Cycle mode (E)"
-
 [node name="FullscreenButton" type="Button" parent="UI"]
 anchors_preset = 1
 anchor_left = 1.0
@@ -67,21 +53,6 @@ offset_bottom = 88.0
 grow_horizontal = 0
 focus_mode = 0
 text = "Fullscreen (F)"
-
-[node name="NextPieceButton" type="Button" parent="UI"]
-anchors_preset = 6
-anchor_left = 1.0
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_left = -136.0
-offset_top = -20.0
-offset_right = -16.0
-offset_bottom = 20.0
-grow_horizontal = 0
-grow_vertical = 2
-focus_mode = 0
-text = "Next piece (N)"
 
 [node name="ResetBoardButton" type="Button" parent="UI"]
 anchors_preset = 2

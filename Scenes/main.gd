@@ -2,12 +2,8 @@ extends Node
 
 const domino_generator: PackedScene = preload("res://Scenes/domino.tscn")
 
+var last_screen_position: Vector2i = Vector2i(0, 0)
 var domino_grid_rotation: int = 0
-var hover_grid_position = Vector2i(0, 0)
-var hovered_domino = null
-
-enum PlacingMode {NULL = 0, PLACE, REMOVE}
-var mode: PlacingMode = PlacingMode.PLACE
 
 const direction_offsets = [
 	Vector2i( 0, 1),
@@ -19,80 +15,84 @@ const direction_offsets = [
 func _ready() -> void:
 	$UI/NameAndVersion.text = 'dots-and-blanks ' + ProjectSettings.get_setting('application/config/version')
 	$DominoContainer/DominoGhost.put_dots(1, 1)
-	self.hover_grid_position = Vector2i(2, 2)
-	calculate_domino_ghost_position(self.hover_grid_position)
-	create_domino(hover_grid_position)
-	randomize_dots()
+	const grid_position = Vector2i(2, 2)
+	calculate_domino_ghost_position(grid_position)
+	create_domino(grid_position)
 	$UI/RotateButton.pressed.connect(self.rotate_domino)
-	$UI/CycleModeButton.pressed.connect(self.cycle_mode)
-	$UI/NextPieceButton.pressed.connect(self.next_domino_piece)
 	$UI/FullscreenButton.pressed.connect(self.toggle_fullscreen)
 	$UI/ResetBoardButton.pressed.connect(self.reset_board)
 
 func _input(event) -> void:
 	if event is InputEventMouseMotion:
-		var screen_position = Vector2i(event.position)
-		reset_domino_highlight()
-		if $DominoContainer/Deck.selected_domino == null:
-			$DominoContainer/DominoGhost.visible = false;
-			highlight_hovered_domino(Vector2i(screen_position))
-		else:
-			$DominoContainer/DominoGhost.visible = true;
-			var grid_position = $DominoContainer/DominoGrid.get_closest_grid_position(screen_position)
-			calculate_domino_ghost_position(grid_position)
-			var valid = is_valid_placing_position(grid_position, self.domino_grid_rotation)
-			$DominoContainer/DominoGhost.modulate = Color(0.0, 1.0, 0.0, 0.5) if valid else Color(1.0, 0.0, 0.0, 0.5)
-		var deck_domino = $DominoContainer/Deck.get_domino_at_position(screen_position)
-		$DominoContainer/Deck.highlight_domino(deck_domino)
+		handle_mouse_move(event)
 	if event is InputEventMouseButton:
-		var screen_position = Vector2i(event.position)
-		reset_domino_highlight()
-		if (event.button_index == 1 and event.button_mask > 0):
-			var deck_domino = $DominoContainer/Deck.get_domino_at_position(screen_position)
-			if deck_domino != null:
-				$DominoContainer/Deck.select_domino(deck_domino)
-				$DominoContainer/DominoGhost.visible = true
-				$DominoContainer/DominoGhost.put_dots(deck_domino.dots_top, deck_domino.dots_bot)
-			else:
-				var deck_selected_domino = $DominoContainer/Deck.selected_domino
-				if deck_selected_domino == null:
-					var hovered_domino = search_domino_at(screen_position)
-					if hovered_domino != null:
-						remove_domino(hovered_domino)
-				else:
-					var grid_position = $DominoContainer/DominoGrid.get_closest_grid_position(screen_position)
-					calculate_domino_ghost_position(grid_position)
-					var valid = is_valid_placing_position(grid_position, self.domino_grid_rotation)
-					if valid:
-						$DominoContainer/Deck.remove_selected_domino()
-						create_domino(grid_position)
-		if (event.button_index == 2 and event.button_mask > 0):
-			rotate_domino()
-			calculate_domino_ghost_position_from_screen(screen_position)
+		handle_mouse_click(event)
 	if event is InputEventKey:
-		if event.pressed && !event.echo:
-			print(event)
-		if event.keycode == 70 && event.pressed && !event.echo:
-			toggle_fullscreen()
-		if event.keycode == 78 && event.pressed && !event.echo:
-			randomize_dots()
-		if event.keycode == 82 && event.pressed && !event.echo:
-			if event.ctrl_pressed:
-				reset_board()
-			else:
-				rotate_domino()
-		if event.keycode == 69 && event.pressed && !event.echo:
-			cycle_mode()
-		calculate_domino_ghost_position(self.hover_grid_position)
+		handle_key(event)
 
-func set_mode(mode: PlacingMode) -> void:
-	self.mode = mode
-	if mode == PlacingMode.PLACE:
-		$UI/PlacingMode.text = 'Mode: Placing'
-		$DominoContainer/DominoGhost.visible = true
+func handle_mouse_move(event: InputEventMouseMotion) -> void:
+	var screen_position = Vector2i(event.position)
+	reset_domino_highlight()
+	highlight_hover(screen_position)
+	var deck_domino = $DominoContainer/Deck.get_domino_at_position(screen_position)
+	$DominoContainer/Deck.highlight_domino(deck_domino)
+	self.last_screen_position = screen_position
+
+func handle_mouse_click(event: InputEventMouseButton) -> void:
+	var screen_position = Vector2i(event.position)
+	reset_domino_highlight()
+	if (event.button_index == 1 and event.button_mask > 0):
+		var deck_domino = $DominoContainer/Deck.get_domino_at_position(screen_position)
+		if deck_domino != null:
+			$DominoContainer/Deck.select_domino(deck_domino)
+			$DominoContainer/DominoGhost.visible = true
+			$DominoContainer/DominoGhost.put_dots(deck_domino.dots_top, deck_domino.dots_bot)
+		else:
+			var deck_selected_domino = $DominoContainer/Deck.selected_domino
+			if deck_selected_domino == null:
+				var hovered_domino = search_domino_at(screen_position)
+				if hovered_domino != null:
+					remove_domino(hovered_domino)
+			else:
+				var grid_position = $DominoContainer/DominoGrid.get_closest_grid_position(screen_position)
+				calculate_domino_ghost_position(grid_position)
+				var valid = is_valid_placing_position(grid_position, self.domino_grid_rotation)
+				if valid:
+					$DominoContainer/Deck.remove_selected_domino()
+					create_domino(grid_position)
+	if (event.button_index == 2 and event.button_mask > 0):
+		rotate_domino()
+		highlight_hover(screen_position)
+	self.last_screen_position = screen_position
+
+func handle_key(event: InputEventKey) -> void:
+	if event.pressed && !event.echo:
+		print(event)
+	if event.keycode == 70 && event.pressed && !event.echo:
+		toggle_fullscreen()
+	if event.keycode == 82 && event.pressed && !event.echo:
+		if event.ctrl_pressed:
+			reset_board()
+		else:
+			rotate_domino()
+	highlight_hover(self.last_screen_position)
+
+func highlight_hover(screen_position: Vector2i) -> void:
+	if $DominoContainer/Deck.selected_domino == null:
+		highlight_removing(screen_position)
 	else:
-		$UI/PlacingMode.text = 'Mode: Removing'
-		$DominoContainer/DominoGhost.visible = false
+		highlight_placing(screen_position)
+
+func highlight_removing(screen_position: Vector2i) -> void:
+	$DominoContainer/DominoGhost.visible = false
+	highlight_hovered_domino(Vector2i(screen_position))
+
+func highlight_placing(screen_position: Vector2i) -> void:
+	$DominoContainer/DominoGhost.visible = true
+	var grid_position = $DominoContainer/DominoGrid.get_closest_grid_position(screen_position)
+	calculate_domino_ghost_position(grid_position)
+	var valid = is_valid_placing_position(grid_position, self.domino_grid_rotation)
+	$DominoContainer/DominoGhost.modulate = Color(0.0, 1.0, 0.0, 0.5) if valid else Color(1.0, 0.0, 0.0, 0.5)
 
 func search_domino_at(screen_position: Vector2i) -> Domino:
 	var grid_position = $DominoContainer/DominoGrid.get_closest_grid_position(screen_position)
@@ -106,25 +106,13 @@ func highlight_hovered_domino(screen_position: Vector2i) -> void:
 	if hovered_domino != null:
 		hovered_domino.modulate = Color(1.0, 0.0, 0.0, 1.0)
 
-func calculate_domino_ghost_position_from_screen(screen_position: Vector2i) -> bool:
-	hover_grid_position = $DominoContainer/DominoGrid.get_closest_grid_position(screen_position)
-	calculate_domino_ghost_position(hover_grid_position)
-	self.hovered_domino = search_domino_at(screen_position)
-	if $DominoContainer/Deck.selected_domino != null:
-		$DominoContainer/DominoGhost.visible = true
-		return is_valid_placing_position(hover_grid_position, self.domino_grid_rotation)
-	else:
-		if hovered_domino != null:
-			highlight_hovered_domino_for_removal()
-			return true
-	return false
-
 func is_valid_placing_position(grid_position, rotation) -> bool:
 	var primary_position_in_bounds = $DominoContainer/DominoGrid.is_in_bounds(grid_position)
 	var secondary_position_in_bounds = $DominoContainer/DominoGrid.is_in_bounds(get_secondary_grid_position(grid_position, rotation))
+	var is_empty = $DominoContainer/Dominoes.get_children(true).size() == 0
 	var no_collision = check_collisions(grid_position, rotation)
 	var matches = match_dot_values(grid_position, rotation)
-	return primary_position_in_bounds and secondary_position_in_bounds and no_collision and matches
+	return (primary_position_in_bounds and secondary_position_in_bounds) and (is_empty or no_collision and matches)
 	
 func match_dot_values(grid_position, grid_rotation) -> bool:
 	var primary_value = $DominoContainer/DominoGhost.get_dot_value(self.domino_grid_rotation <= 1)
@@ -180,24 +168,9 @@ func highlight_hovered_domino_for_removal() -> void:
 	if self.hovered_domino != null:
 		self.hovered_domino.modulate = Color(1.0, 0.0, 0.0, 1.0)
 
-func cycle_mode() -> void:
-	reset_domino_highlight()
-	if self.mode == PlacingMode.PLACE:
-		set_mode(PlacingMode.REMOVE)
-		highlight_hovered_domino_for_removal()
-	else:
-		set_mode(PlacingMode.PLACE)
-		is_valid_placing_position(hover_grid_position, self.domino_grid_rotation)
-
 func rotate_domino() -> void:
 	self.domino_grid_rotation = (self.domino_grid_rotation + 1) % 4
 	$DominoContainer/DominoGhost.rotation = -0.5 * PI * self.domino_grid_rotation
-
-func next_domino_piece() -> void:
-	randomize_dots()
-
-func randomize_dots() -> void:
-	$DominoContainer/DominoGhost.put_dots(randi_range(0, 6), randi_range(0, 6))
 
 func toggle_fullscreen() -> void:
 	if DisplayServer.window_get_mode() != DisplayServer.WINDOW_MODE_FULLSCREEN:
