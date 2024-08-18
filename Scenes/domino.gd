@@ -1,41 +1,41 @@
 class_name Domino
 extends Node2D
 
-var dotsTop: int = 0
-var dotsBot: int = 0
+var dots_top: int = 0
+var dots_bot: int = 0
 
-var gridPosition: Vector2i
-var gridRotation: int
+var grid_position: Vector2i
+var grid_rotation: int
 
-func putDots(top: int, bot: int):
-	dotsTop = top
-	dotsBot = bot
-	$DominoBlank/DominoDotsTop.region_rect = Rect2(16 * dotsTop, 0, 16, 16)
-	$DominoBlank/DominoDotsBot.region_rect = Rect2(16 * dotsBot, 0, 16, 16)
+func put_dots(top: int, bot: int) -> void:
+	dots_top = top
+	dots_bot = bot
+	$DominoBlank/DominoDotsTop.region_rect = Rect2(16 * dots_top, 0, 16, 16)
+	$DominoBlank/DominoDotsBot.region_rect = Rect2(16 * dots_bot, 0, 16, 16)
 
-func getDominoSideAtPosition(otherGridPosition: Vector2i):
-	if otherGridPosition == gridPosition:
+func get_domino_side_at_position(other_grid_position: Vector2i) -> int:
+	if other_grid_position == grid_position:
 		return DominoSide.PRIMARY
-	elif otherGridPosition == get_secondary_grid_position():
+	elif other_grid_position == get_secondary_grid_position():
 		return DominoSide.SECONDARY
 	return DominoSide.NULL
 
-func getDotValue(primary: bool):
-	if self.gridRotation <= 1:
-		return dotsTop if primary else dotsBot
+func get_dot_value(primary: bool) -> int:
+	if self.grid_rotation <= 1:
+		return dots_top if primary else dots_bot
 	else:
-		return dotsBot if primary else dotsTop
+		return dots_bot if primary else dots_top
 
-func getDotValueAtSide(side: int):
+func get_dot_value_at_side(side: int) -> int:
 	if side == DominoSide.PRIMARY:
-		return getDotValue(true)
+		return get_dot_value(true)
 	elif side == DominoSide.SECONDARY:
-		return getDotValue(false)
+		return get_dot_value(false)
 	return -1
 
 func get_secondary_grid_position() -> Vector2i:
-	var offset = Vector2i.DOWN if gridRotation % 2 == 0 else Vector2i.RIGHT
-	return gridPosition + offset
+	var offset = Vector2i.DOWN if grid_rotation % 2 == 0 else Vector2i.RIGHT
+	return grid_position + offset
 	
 func contains_point(screen_position: Vector2i) -> bool:
 	var viewport_size = get_viewport().size
