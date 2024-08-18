@@ -1,3 +1,4 @@
+class_name Domino
 extends Node2D
 
 var dotsTop: int = 0
@@ -15,7 +16,7 @@ func putDots(top: int, bot: int):
 func getDominoSideAtPosition(otherGridPosition: Vector2i):
 	if otherGridPosition == gridPosition:
 		return DominoSide.PRIMARY
-	elif otherGridPosition == getSecondaryGridPosition():
+	elif otherGridPosition == get_secondary_grid_position():
 		return DominoSide.SECONDARY
 	return DominoSide.NULL
 
@@ -32,6 +33,13 @@ func getDotValueAtSide(side: int):
 		return getDotValue(false)
 	return -1
 
-func getSecondaryGridPosition():
-	var offset = Vector2i(0, 1) if self.gridRotation % 2 == 0 else Vector2i(1, 0)
+func get_secondary_grid_position() -> Vector2i:
+	var offset = Vector2i.DOWN if gridRotation % 2 == 0 else Vector2i.RIGHT
 	return gridPosition + offset
+	
+func contains_point(screen_position: Vector2i) -> bool:
+	var viewport_size = get_viewport().size
+	var domino_space_position = Vector2(screen_position - viewport_size / 2)
+	var to_position = position - domino_space_position
+	var to_position_scaled = to_position / scale
+	return $DominoBlank.get_rect().has_point(to_position_scaled)

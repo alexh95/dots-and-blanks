@@ -20,7 +20,7 @@ const hardLineWidth = 4.0
 const softLineColor = Color(0.6, 0.6, 0.6, 0.2)
 const softLineWidth = 2.0
 
-var dotValues = []
+var dotValues: Array[Array] = []
 
 func _init():
 	for row in range(rowCount):
@@ -47,39 +47,29 @@ func _draw():
 			var softColX = cellSize + cellSize * col - halfCellSize
 			draw_line(offset + Vector2i(softColX, colFromY), offset + Vector2i(softColX, colToY), softLineColor, softLineWidth)
 
-func getClosestGridPosition(screenPosition: Vector2i):
-	var viewportSize = get_viewport().size
-	var offsetPosition = screenPosition - (viewportSize - gridSize) / 2 
-	var gridPosition = Vector2i(floor(float(offsetPosition.x) / cellSize), floor(float(offsetPosition.y) / cellSize))
-	return gridPosition
+func get_closest_grid_position(screenPosition: Vector2i):
+	var viewport_size = get_viewport().size
+	var offset_position = screenPosition - (viewport_size - gridSize) / 2 
+	var grid_position = Vector2i(floor(float(offset_position.x) / cellSize), floor(float(offset_position.y) / cellSize))
+	return grid_position
 	
-func getGridScreenPosition(gridPosition: Vector2i):
-	var screenPosition = gridPosition * cellSize - gridSize / 2
-	return screenPosition
-	
-func isInsideGrid(gridPosition: Vector2i, dominoGridRotation: int):
-	if dominoGridRotation <= 1:
-		return gridPosition.x >= 0 && gridPosition.x < colCount  && gridPosition.y >= 0 && gridPosition.y < rowCount - 1
-	else:
-		return gridPosition.x >= 0 && gridPosition.x < colCount - 1  && gridPosition.y >= 0 && gridPosition.y < rowCount
+func get_grid_screen_position(grid_position: Vector2i) -> Vector2i:
+	var grid_screen_position = grid_position * cellSize - gridSize / 2
+	return grid_screen_position
 
-func updateDotValuesFromDominoes(dominoes):
-	for domino in dominoes:
-		updateDotValues(domino)
-		
-func updateDotValues(domino):
-	var primaryPosition = domino.gridPosition
-	var primaryDotValue = domino.getDotValue(true)
-	dotValues[primaryPosition.y][primaryPosition.x] = primaryDotValue
-	var secondaryPosition = domino.getSecondaryGridPosition()
-	var secondaryDotValue = domino.getDotValue(false)
-	dotValues[secondaryPosition.y][secondaryPosition.x] = secondaryDotValue
+func update_dot_values(domino: Domino):
+	var primary_position = domino.gridPosition
+	var primary_dot_value = domino.getDotValue(true)
+	dotValues[primary_position.y][primary_position.x] = primary_dot_value
+	var secondary_position = domino.get_secondary_grid_position()
+	var secondary_dot_value = domino.getDotValue(false)
+	dotValues[secondary_position.y][secondary_position.x] = secondary_dot_value
 
-func removeDotValues(domino):
-	var primaryPosition = domino.gridPosition
-	dotValues[primaryPosition.y][primaryPosition.x] = -1
-	var secondaryPosition = domino.getSecondaryGridPosition()
-	dotValues[secondaryPosition.y][secondaryPosition.x] = -1
+func remove_dot_values(domino: Domino):
+	var primary_position = domino.gridPosition
+	dotValues[primary_position.y][primary_position.x] = -1
+	var secondary_position = domino.get_secondary_grid_position()
+	dotValues[secondary_position.y][secondary_position.x] = -1
 
-func isInBounds(gridPosition):
-	return 0 <= gridPosition.x && gridPosition.x < colCount && 0 <= gridPosition.y && gridPosition.y < rowCount
+func isInBounds(grid_position: Vector2i) -> bool:
+	return 0 <= grid_position.x && grid_position.x < colCount && 0 <= grid_position.y && grid_position.y < rowCount
