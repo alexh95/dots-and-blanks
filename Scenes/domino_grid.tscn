@@ -2,5 +2,5 @@
 
 [ext_resource type="Script" path="res://domino_grid.gd" id="1_wkso0"]
 
-[node name="domino_grid" type="Node2D"]
+[node name="DominoGrid" type="Node2D"]
 script = ExtResource("1_wkso0")

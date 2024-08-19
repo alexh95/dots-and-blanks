@@ -1,6 +1,7 @@
 extends Node
 
 const domino_generator: PackedScene = preload("res://Scenes/domino.tscn")
+const rule_generator: PackedScene = preload("res://Scenes/grid_rule.tscn")
 
 var last_screen_position: Vector2i = Vector2i(0, 0)
 var domino_grid_rotation: int = 0
@@ -18,6 +19,7 @@ func _ready() -> void:
 	const grid_position = Vector2i(2, 2)
 	calculate_domino_ghost_position(grid_position)
 	create_domino(grid_position)
+	create_rule(Vector2i(0, 0), 3)
 	$UI/RotateButton.pressed.connect(self.rotate_domino)
 	$UI/FullscreenButton.pressed.connect(self.toggle_fullscreen)
 	$UI/ResetBoardButton.pressed.connect(self.reset_board)
@@ -197,3 +199,12 @@ func remove_domino(domino: Domino) -> void:
 		$DominoContainer/DominoGrid.remove_dot_values(domino)
 		$DominoContainer/Dominoes.remove_child(domino)
 		$DominoContainer/Deck.add_domino(Vector2i(domino.dots_top, domino.dots_bot))
+
+func create_rule(grid_position: Vector2i, dots: int) -> void:
+	var rule = rule_generator.instantiate()
+	rule.grid_position = grid_position
+	rule.put_dots(dots)
+	var screen_position = $DominoContainer/DominoGrid.get_grid_screen_position(grid_position)
+	rule.position = screen_position + $DominoContainer/DominoGrid.rule_cell_offset
+	$DominoContainer/Rules.add_child(rule)
+	$DominoContainer/DominoGrid.update_rules(rule)
