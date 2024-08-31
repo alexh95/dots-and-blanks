@@ -4,6 +4,7 @@ const cell_size: int = 64
 const half_cell_size: int = cell_size / 2
 const vertical_cell_offset = Vector2i(half_cell_size, cell_size)
 const horizontal_cell_offset = Vector2i(cell_size, half_cell_size)
+const rule_cell_offset = Vector2i(half_cell_size, half_cell_size)
 
 const row_count: int = 6
 const col_count: int = 5
@@ -20,13 +21,17 @@ const soft_line_color = Color(0.6, 0.6, 0.6, 0.2)
 const soft_line_width = 2.0
 
 var dot_values: Array[Array]
+var rules: Array[Array]
 
 func _init() -> void:
 	dot_values = []
+	rules = []
 	for row in range(row_count):
 		dot_values.append([])
+		rules.append([])
 		for col in range(col_count):
-			dot_values[row].append(-1)
+			dot_values[row].append(null)
+			rules[row].append(null)
 
 func _draw() -> void:
 	var row_from_x = 0
@@ -66,9 +71,16 @@ func update_dot_values(domino: Domino) -> void:
 
 func remove_dot_values(domino: Domino) -> void:
 	var primary_position = domino.grid_position
-	dot_values[primary_position.y][primary_position.x] = -1
+	dot_values[primary_position.y][primary_position.x] = null
 	var secondary_position = domino.get_secondary_grid_position()
-	dot_values[secondary_position.y][secondary_position.x] = -1
+	dot_values[secondary_position.y][secondary_position.x] = null
+
+func update_rules(rule: GridRule) -> void:
+	var grid_position = rule.grid_position
+	rules[grid_position.y][grid_position.x] = rule.dots
+	print('todo')
+	for r in rules:
+		print(r)
 
 func is_in_bounds(grid_position: Vector2i) -> bool:
 	return 0 <= grid_position.x && grid_position.x < col_count && 0 <= grid_position.y && grid_position.y < row_count

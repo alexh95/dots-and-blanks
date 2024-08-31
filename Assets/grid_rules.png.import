@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://j1d7j6rrfup7"
-path="res://.godot/imported/dotted.png-a7c3f62e77abf8e1a2ed74660631902d.ctex"
+uid="uid://djxx4iibdskbj"
+path="res://.godot/imported/grid_rules.png-0444253c714f12caf04e38b6eea3df1a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/dotted.png"
-dest_files=["res://.godot/imported/dotted.png-a7c3f62e77abf8e1a2ed74660631902d.ctex"]
+source_file="res://Assets/grid_rules.png"
+dest_files=["res://.godot/imported/grid_rules.png-0444253c714f12caf04e38b6eea3df1a.ctex"]
 
 [params]
 
