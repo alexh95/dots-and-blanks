@@ -1,15 +1,19 @@
-[gd_scene load_steps=3 format=3 uid="uid://ck4hmj5ipdltm"]
+[gd_scene load_steps=4 format=3 uid="uid://ck4hmj5ipdltm"]
 
 [ext_resource type="Script" path="res://Scenes/grid_rule.gd" id="1_00aws"]
 [ext_resource type="Texture2D" uid="uid://dm58yu7dg0je6" path="res://Assets/domino-dots.png" id="1_jm8ux"]
+[ext_resource type="Texture2D" uid="uid://djxx4iibdskbj" path="res://Assets/grid_rules.png" id="2_duhf1"]
 
 [node name="GridRule" type="Node2D"]
 scale = Vector2(4, 4)
 script = ExtResource("1_00aws")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Rule" type="Sprite2D" parent="."]
+texture = ExtResource("2_duhf1")
+region_enabled = true
+region_rect = Rect2(32, 0, 16, 16)
 
-[node name="Dots" type="Sprite2D" parent="Sprite2D"]
+[node name="Dots" type="Sprite2D" parent="Rule"]
 texture = ExtResource("1_jm8ux")
 region_enabled = true
 region_rect = Rect2(64, 0, 16, 16)

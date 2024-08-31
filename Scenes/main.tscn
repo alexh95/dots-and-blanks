@@ -19,9 +19,9 @@ modulate = Color(1, 1, 1, 0.501961)
 z_index = -1
 position = Vector2(221, 225)
 
-[node name="Dominoes" type="Node2D" parent="DominoContainer"]
-
 [node name="Rules" type="Node2D" parent="DominoContainer"]
+
+[node name="Dominoes" type="Node2D" parent="DominoContainer"]
 
 [node name="Deck" parent="DominoContainer" instance=ExtResource("4_twr5d")]
 

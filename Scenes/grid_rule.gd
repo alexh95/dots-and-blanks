@@ -6,4 +6,4 @@ var dots: int = 0
 
 func put_dots(value: int) -> void:
 	dots = value
-	$Sprite2D/Dots.region_rect = Rect2(16 * value, 0, 16, 16)
+	$Rule/Dots.region_rect = Rect2(16 * value, 0, 16, 16)

@@ -108,13 +108,14 @@ func highlight_hovered_domino(screen_position: Vector2i) -> void:
 	if hovered_domino != null:
 		hovered_domino.modulate = Color(1.0, 0.0, 0.0, 1.0)
 
-func is_valid_placing_position(grid_position, rotation) -> bool:
+func is_valid_placing_position(grid_position, grid_rotation) -> bool:
 	var primary_position_in_bounds = $DominoContainer/DominoGrid.is_in_bounds(grid_position)
-	var secondary_position_in_bounds = $DominoContainer/DominoGrid.is_in_bounds(get_secondary_grid_position(grid_position, rotation))
+	var secondary_position_in_bounds = $DominoContainer/DominoGrid.is_in_bounds(get_secondary_grid_position(grid_position, grid_rotation))
 	var is_empty = $DominoContainer/Dominoes.get_children(true).size() == 0
-	var no_collision = check_collisions(grid_position, rotation)
-	var matches = match_dot_values(grid_position, rotation)
-	return (primary_position_in_bounds and secondary_position_in_bounds) and (is_empty or no_collision and matches)
+	var no_collision = check_collisions(grid_position, grid_rotation)
+	var matches = match_dot_values(grid_position, grid_rotation)
+	var respects_rules = respects_grid_rules(grid_position, grid_rotation)
+	return (primary_position_in_bounds and secondary_position_in_bounds and respects_rules) and (is_empty or no_collision and matches)
 	
 func match_dot_values(grid_position, grid_rotation) -> bool:
 	var primary_value = $DominoContainer/DominoGhost.get_dot_value(self.domino_grid_rotation <= 1)
@@ -132,6 +133,20 @@ func match_dot_local_values(grid_position: Vector2i, dot_value: int) -> bool:
 			if dot_value == target_dot_value:
 				return true
 	return false
+
+func respects_grid_rules(grid_position: Vector2i, grid_rotation: int) -> bool:
+	var primary_value = $DominoContainer/DominoGhost.get_dot_value(grid_rotation <= 1)
+	if $DominoContainer/DominoGrid.is_in_bounds(grid_position):
+		var primary_grid_rule_value = $DominoContainer/DominoGrid.rules[grid_position.y][grid_position.x]
+		if (primary_grid_rule_value != null) and (primary_value != primary_grid_rule_value):
+			return false
+	var secondary_grid_position = get_secondary_grid_position(grid_position, grid_rotation)
+	var secondary_value = $DominoContainer/DominoGhost.get_dot_value(grid_rotation > 1)
+	if $DominoContainer/DominoGrid.is_in_bounds(secondary_grid_position):
+		var secondary_grid_rule_value = $DominoContainer/DominoGrid.rules[secondary_grid_position.y][secondary_grid_position.x]
+		if (secondary_grid_rule_value != secondary_grid_rule_value) and (secondary_value != secondary_grid_rule_value):
+			return false
+	return true
 
 func get_dot_value_at_position(grid_position) -> int:
 	for domino in $DominoContainer/Dominoes.get_children(true):

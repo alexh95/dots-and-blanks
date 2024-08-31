@@ -1,9 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://cm6bsw6e4ul23"]
-
-[ext_resource type="Texture2D" uid="uid://j1d7j6rrfup7" path="res://Assets/dotted.png" id="1_ae44g"]
-
-[node name="Dotted" type="Node2D"]
-scale = Vector2(4, 4)
-
-[node name="Sprite" type="Sprite2D" parent="."]
-texture = ExtResource("1_ae44g")
