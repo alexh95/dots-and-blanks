@@ -7,26 +7,27 @@
 scale = Vector2(4, 4)
 script = ExtResource("1_8y4e6")
 
-[node name="BaseTop" type="Sprite2D" parent="."]
-position = Vector2(0, -8)
+[node name="BasePrimary" type="Sprite2D" parent="."]
+position = Vector2(-8, 0)
+rotation = -3.14159
 texture = ExtResource("2_3w6rl")
 region_enabled = true
-region_rect = Rect2(16, 32, 16, 16)
+region_rect = Rect2(0, 32, 16, 16)
 
-[node name="BaseBot" type="Sprite2D" parent="."]
-position = Vector2(0, 8)
+[node name="BaseSecondary" type="Sprite2D" parent="."]
+position = Vector2(8, 0)
 texture = ExtResource("2_3w6rl")
 region_enabled = true
-region_rect = Rect2(32, 32, 16, 16)
+region_rect = Rect2(0, 32, 16, 16)
 
-[node name="DotsTop" type="Sprite2D" parent="."]
-position = Vector2(0, -8)
+[node name="DotsPrimary" type="Sprite2D" parent="."]
+position = Vector2(-8, 0)
 texture = ExtResource("2_3w6rl")
 region_enabled = true
 region_rect = Rect2(48, 0, 16, 16)
 
-[node name="DotsBot" type="Sprite2D" parent="."]
-position = Vector2(0, 8)
+[node name="DotsSecondary" type="Sprite2D" parent="."]
+position = Vector2(8, 0)
 texture = ExtResource("2_3w6rl")
 region_enabled = true
 region_rect = Rect2(80, 0, 16, 16)

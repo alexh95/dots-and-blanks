@@ -7,30 +7,19 @@ var domino_grid_rotation: int = 0
 @onready var tile_set_source_id = $DominoContainer/Tiles/LayerBack.tile_set.get_source_id(0)
 
 const direction_offsets = [
+	Vector2i.RIGHT,
 	Vector2i.UP,
 	Vector2i.LEFT,
 	Vector2i.DOWN,
-	Vector2i.RIGHT,
 ]
 
-const placement_primary_atlas_coordinate = [
-	Vector2i(2, 2),
-	Vector2i(0, 2),
-	Vector2i(1, 2),
-	Vector2i(3, 2),
-]
-
-const placement_secondary_atlas_coordinate = [
-	Vector2i(1, 2),
-	Vector2i(3, 2),
-	Vector2i(2, 2),
-	Vector2i(0, 2),
-]
+const domino_base_atlas_coords = Vector2i(0, 2)
+const placement_primary_alternative = [2, 3, 0, 1]
+const placement_secondary_alternative = [0, 1, 2, 3]
 
 func _ready() -> void:
 	$UI/NameAndVersion.text = 'dots-and-blanks ' + ProjectSettings.get_setting('application/config/version')
 	$DominoContainer/DominoGhost.put_dots(1, 1)
-	const grid_position = Vector2i(2, 2)
 	$UI/RotateButton.pressed.connect(self.rotate_domino)
 	$UI/FullscreenButton.pressed.connect(self.toggle_fullscreen)
 	$UI/ResetBoardButton.pressed.connect(self.reset_board)
@@ -43,7 +32,10 @@ func _input(event) -> void:
 	if event is InputEventKey:
 		handle_key(event)
 
-func handle_mouse_move(event: InputEventMouseMotion) -> void:
+func handle_mouse_move(_event: InputEventMouseMotion) -> void:
+	update_highlight()
+
+func update_highlight() -> void:
 	$DominoContainer/Tiles/LayerHighlight.clear()
 	var global_mouse_position: Vector2 = $DominoContainer/Tiles.get_global_mouse_position()
 	var tile_position: Vector2i = $DominoContainer/Tiles/LayerBack.local_to_map(global_mouse_position)
@@ -53,13 +45,17 @@ func handle_mouse_move(event: InputEventMouseMotion) -> void:
 	$DominoContainer/DominoGhost.position = global_mouse_position
 
 func handle_mouse_click(event: InputEventMouseButton) -> void:
-	if (event.button_index == 1 and event.button_mask > 0):
+	if event.button_index == 1 and event.button_mask > 0:
 		var global_mouse_position: Vector2 = $DominoContainer/Tiles.get_global_mouse_position()
 		var tile_position: Vector2i = $DominoContainer/Tiles/LayerBack.local_to_map(global_mouse_position)
 		if placement_valid(tile_position):
 			place(tile_position)
-	if (event.button_index == 2 and event.button_mask > 0):
+	elif event.button_index == 2 and event.button_mask > 0:
 		rotate_domino()
+	elif event.button_index == 4 and event.button_mask > 0:
+		rotate_domino(true)
+	elif event.button_index == 5 and event.button_mask > 0:
+		rotate_domino(false)
 
 func handle_key(event: InputEventKey) -> void:
 	if event.pressed && !event.echo:
@@ -70,7 +66,7 @@ func handle_key(event: InputEventKey) -> void:
 		if event.ctrl_pressed:
 			reset_board()
 		else:
-			rotate_domino()
+			rotate_domino(event.shift_pressed)
 
 func placement_in_bounds(tile_position: Vector2i) -> bool:
 	var secondary_tile_position = tile_position + direction_offsets[domino_grid_rotation]
@@ -101,12 +97,14 @@ func placement_higlight(tile_position: Vector2i, valid: bool) -> void:
 
 func place(tile_position: Vector2i) -> void:
 	var secondary_tile_position = tile_position + direction_offsets[domino_grid_rotation]
-	$DominoContainer/Tiles/LayerDominoBack.set_cell(tile_position, tile_set_source_id, placement_primary_atlas_coordinate[domino_grid_rotation])
-	$DominoContainer/Tiles/LayerDominoBack.set_cell(secondary_tile_position, tile_set_source_id, placement_secondary_atlas_coordinate[domino_grid_rotation])
+	$DominoContainer/Tiles/LayerDominoBack.set_cell(tile_position, tile_set_source_id, domino_base_atlas_coords, placement_primary_alternative[domino_grid_rotation])
+	$DominoContainer/Tiles/LayerDominoBack.set_cell(secondary_tile_position, tile_set_source_id, domino_base_atlas_coords, placement_secondary_alternative[domino_grid_rotation])
 
-func rotate_domino() -> void:
-	self.domino_grid_rotation = (self.domino_grid_rotation + 1) % 4
+func rotate_domino(counter_clockwise: bool = true) -> void:
+	var rotation_delta = 1 if counter_clockwise else -1
+	self.domino_grid_rotation = (self.domino_grid_rotation + rotation_delta) % 4
 	$DominoContainer/DominoGhost.rotation = -0.5 * PI * self.domino_grid_rotation
+	update_highlight()
 
 func toggle_fullscreen() -> void:
 	if DisplayServer.window_get_mode() != DisplayServer.WINDOW_MODE_FULLSCREEN:

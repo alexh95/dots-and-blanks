@@ -43,8 +43,24 @@ texture = ExtResource("5_ivbqk")
 7:1/0 = 0
 7:1/0/custom_data_0 = true
 7:1/0/custom_data_1 = true
+0:2/next_alternative_id = 6
 0:2/0 = 0
 0:2/0/custom_data_0 = true
+0:2/0/custom_data_1 = true
+0:2/1 = 1
+0:2/1/flip_v = true
+0:2/1/transpose = true
+0:2/1/custom_data_0 = true
+0:2/1/custom_data_1 = true
+0:2/2 = 2
+0:2/2/flip_h = true
+0:2/2/custom_data_0 = true
+0:2/2/custom_data_1 = true
+0:2/3 = 3
+0:2/3/flip_h = true
+0:2/3/transpose = true
+0:2/3/custom_data_0 = true
+0:2/3/custom_data_1 = true
 1:2/0 = 0
 1:2/0/custom_data_0 = true
 2:2/0 = 0
@@ -133,6 +149,8 @@ tile_set = SubResource("TileSet_qri0j")
 [node name="LayerHighlight" type="TileMapLayer" parent="DominoContainer/Tiles"]
 tile_map_data = PackedByteArray("AAD7//3/AAACAAAAAAAEAP3/AAADAAAAAAAEAAIAAAACAAAAAAD7/wIAAAADAAAAAAA=")
 tile_set = SubResource("TileSet_qri0j")
+
+[node name="Deck" type="Node2D" parent="DominoContainer"]
 
 [node name="DominoGhost" parent="DominoContainer" instance=ExtResource("1_76b71")]
 modulate = Color(1, 1, 1, 0.501961)
