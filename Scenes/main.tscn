@@ -146,14 +146,29 @@ tile_set = SubResource("TileSet_qri0j")
 tile_map_data = PackedByteArray("AAD7//3/AAACAAAAAAAEAP3/AAADAAAAAAAEAAIAAAACAAAAAAD7/wIAAAADAAAAAAA=")
 tile_set = SubResource("TileSet_qri0j")
 
+[node name="LayerDominoFront" type="TileMapLayer" parent="DominoContainer/Tiles"]
+tile_map_data = PackedByteArray("AAD7//3/AAACAAAAAAAEAP3/AAADAAAAAAAEAAIAAAACAAAAAAD7/wIAAAADAAAAAAA=")
+tile_set = SubResource("TileSet_qri0j")
+
 [node name="LayerHighlight" type="TileMapLayer" parent="DominoContainer/Tiles"]
 tile_map_data = PackedByteArray("AAD7//3/AAACAAAAAAAEAP3/AAADAAAAAAAEAAIAAAACAAAAAAD7/wIAAAADAAAAAAA=")
 tile_set = SubResource("TileSet_qri0j")
 
 [node name="Deck" type="Node2D" parent="DominoContainer"]
 
+[node name="LayerDominoBack" type="TileMapLayer" parent="DominoContainer/Deck"]
+tile_map_data = PackedByteArray("AAD5/wYAAAAAAAIAAQD5/wcAAAAAAAIAAwD7/wYAAAAAAAIAAQD7/wcAAAAAAAIAAwD9/wYAAAAAAAIAAQD9/wcAAAAAAAIAAwD//wYAAAAAAAIAAQD//wcAAAAAAAIAAwABAAYAAAAAAAIAAQABAAcAAAAAAAIAAwADAAYAAAAAAAIAAQADAAcAAAAAAAIAAwAFAAYAAAAAAAIAAQAFAAcAAAAAAAIAAwA=")
+tile_set = SubResource("TileSet_qri0j")
+
+[node name="LayerDominoFront" type="TileMapLayer" parent="DominoContainer/Deck"]
+tile_map_data = PackedByteArray("AAD5/wYAAAABAAAAAAD7/wYAAAABAAAAAAD9/wYAAAABAAAAAAD//wYAAAABAAAAAAD5/wcAAAACAAAAAAD7/wcAAAACAAAAAAD9/wcAAAACAAAAAAD//wcAAAADAAAAAAABAAcAAAADAAAAAAADAAcAAAADAAAAAAAFAAcAAAADAAAAAAABAAYAAAACAAAAAAADAAYAAAACAAAAAAAFAAYAAAABAAAAAAA=")
+tile_set = SubResource("TileSet_qri0j")
+
+[node name="LayerDominoHighlight" type="TileMapLayer" parent="DominoContainer/Deck"]
+tile_map_data = PackedByteArray("AAD7//3/AAACAAAAAAAEAP3/AAADAAAAAAAEAAIAAAACAAAAAAD7/wIAAAADAAAAAAA=")
+tile_set = SubResource("TileSet_qri0j")
+
 [node name="DominoGhost" parent="DominoContainer" instance=ExtResource("1_76b71")]
-modulate = Color(1, 1, 1, 0.501961)
 position = Vector2(221, 225)
 scale = Vector2(1, 1)
 
